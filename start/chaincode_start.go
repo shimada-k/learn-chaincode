@@ -20,6 +20,7 @@ import (
 	"errors"
 	"fmt"
     "encoding/json"
+    "strings"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
 
@@ -27,7 +28,7 @@ import (
 m['id'] = str
 m['sex']    = int
 
-m[‘birthday’]   = int
+m['birthday']   = int
 m['spouse_id']  = int
 m['father_id']  = int
 m['monther_id'] = int
@@ -66,12 +67,38 @@ func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface, function string
 	return nil, nil
 }
 
+func (t *SimpleChaincode) init_marble(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+    var err error
+    id := args[0]
+    sex := strings.ToLower(args[1])
+    birthday := strings.ToLower(args[2])
+    spouse_id := strings.ToLower(args[3])
+    father_id := strings.ToLower(args[4])
+    mother_id := strings.ToLower(args[5])
+    child_id := strings.ToLower(args[6])
+
+    str := `{"sex": "` + sex + `",
+            "birthday": "` + birthday + `",
+            "spouse_id": "` + spouse_id + `",
+            "father_id": "` + father_id + `",
+            "mother_id": "` + mother_id + `",
+            "child_id": "` + child_id + `"}`
+
+    err = stub.PutState(id, []byte(str))
+    if err != nil {
+        return nil, err
+    }
+    return nil, nil
+}
+
 // Invoke is our entry point to invoke a chaincode function
 func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
 	fmt.Println("invoke is running " + function)
 
 	// Handle different functions
-	if function == "init" {     // 人を追加する
+	if function == "init" {
+		return t.Init(stub, "init", args)
+	} else if function == "init_human" {     // 人を追加する
 		return t.Init(stub, "init", args)
 	} else if function == "goto_hospital" {   // 子供IDを受け取り親を書き換える
         familyAsBytes, err := stub.GetState(args[0])
