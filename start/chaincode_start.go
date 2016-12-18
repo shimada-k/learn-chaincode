@@ -19,9 +19,29 @@ package main
 import (
 	"errors"
 	"fmt"
-
+    "encoding/json"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
+
+/*
+m['id'] = str
+m['sex']    = int
+
+m[‘birthday’]   = int
+m['spouse_id']  = int
+m['father_id']  = int
+m['monther_id'] = int
+m['child_ids']  = array
+*/
+
+type Family struct{
+    Sex int `json:"sex"`
+    Birsthday string `json:"birthday"`
+    SpouseId string `json:"spouse_id"`
+    FatherId string `json:"father_id"`
+    MontherId string `json:"monther_id"`
+    ChildId string `json:"child_id"`
+}
 
 // SimpleChaincode example simple Chaincode implementation
 type SimpleChaincode struct {
@@ -51,10 +71,23 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 	fmt.Println("invoke is running " + function)
 
 	// Handle different functions
-	if function == "init" {													//initialize the chaincode state, used as reset
+	if function == "init" {     // 人を追加する
 		return t.Init(stub, "init", args)
-	}
-	fmt.Println("invoke did not find func: " + function)					//error
+	} else if function == "goto_hospital" {   // 子供IDを受け取り親を書き換える
+        familyAsBytes, err := stub.GetState(args[0])
+        if err != nil {
+            return nil, err
+        }
+
+        res := Family{}
+        json.Unmarshal(familyAsBytes, &res)
+        res.Sex = 3
+
+        jsonAsBytes, _ := json.Marshal(res)
+        stub.PutState(args[0], jsonAsBytes)
+    } else if function == "into_a_family" {   // 子供IDの親を老人のIDに書き換える
+    }
+	fmt.Println("invoke did not find func: " + function)    //error
 
 	return nil, errors.New("Received unknown function invocation: " + function)
 }
@@ -64,11 +97,11 @@ func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function strin
 	fmt.Println("query is running " + function)
 
 	// Handle different functions
-	if function == "dummy_query" {											//read a variable
-		fmt.Println("hi there " + function)						//error
+	if function == "dummy_query" {			//read a variable
+		fmt.Println("hi there " + function)	//error
 		return nil, nil;
 	}
-	fmt.Println("query did not find func: " + function)						//error
+	fmt.Println("query did not find func: " + function)		//error
 
 	return nil, errors.New("Received unknown function query: " + function)
 }
