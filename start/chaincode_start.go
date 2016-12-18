@@ -19,9 +19,19 @@ package main
 import (
 	"errors"
 	"fmt"
-
+    "encoding/json"
+    "strings"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
+
+type Family struct{
+    Sex int `json:"sex"`
+    Birthday string `json:"birthday"`
+    SpouseId string `json:"spouse_id"`
+    FatherId string `json:"father_id"`
+    MotherId string `json:"monther_id"`
+    ChildId string `json:"child_id"`
+}
 
 // SimpleChaincode example simple Chaincode implementation
 type SimpleChaincode struct {
@@ -46,29 +56,87 @@ func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface, function string
 	return nil, nil
 }
 
+func (t *SimpleChaincode) init_human(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+    var err error
+    id := args[0]
+    sex := strings.ToLower(args[1])
+    birthday := strings.ToLower(args[2])
+    spouse_id := strings.ToLower(args[3])
+    father_id := strings.ToLower(args[4])
+    mother_id := strings.ToLower(args[5])
+    child_id := strings.ToLower(args[6])
+
+    str := `{"sex": "` + sex + `",
+            "birthday": "` + birthday + `",
+            "spouse_id": "` + spouse_id + `",
+            "father_id": "` + father_id + `",
+            "mother_id": "` + mother_id + `",
+            "child_id": "` + child_id + `"}`
+
+	fmt.Println(str)
+
+    err = stub.PutState(id, []byte(str))
+    if err != nil {
+        return nil, err
+    }
+    return nil, nil
+}
+
 // Invoke is our entry point to invoke a chaincode function
 func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
 	fmt.Println("invoke is running " + function)
 
 	// Handle different functions
-	if function == "init" {													//initialize the chaincode state, used as reset
+	if function == "init" {
 		return t.Init(stub, "init", args)
-	}
-	fmt.Println("invoke did not find func: " + function)					//error
+	} else if function == "init_human" {     // 人を追加する
+		return t.init_human(stub, args)
+	} else if function == "goto_hospital" {   // 子供IDを受け取り親を書き換える
+        familyAsBytes, err := stub.GetState(args[0])
+        if err != nil {
+            return nil, err
+        }
+
+        res := Family{}
+        json.Unmarshal(familyAsBytes, &res)
+        res.Sex = 3
+
+        jsonAsBytes, _ := json.Marshal(res)
+        stub.PutState(args[0], jsonAsBytes)
+    } else if function == "into_a_family" {   // 子供IDの親を老人のIDに書き換える
+    }
+	fmt.Println("invoke did not find func: " + function)    //error
 
 	return nil, errors.New("Received unknown function invocation: " + function)
 }
 
-// Query is our entry point for queries
-func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
-	fmt.Println("query is running " + function)
+func (t *SimpleChaincode) read(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+    var key, jsonResp string
+    var err error
 
-	// Handle different functions
-	if function == "dummy_query" {											//read a variable
-		fmt.Println("hi there " + function)						//error
-		return nil, nil;
-	}
-	fmt.Println("query did not find func: " + function)						//error
+    if len(args) != 1 {
+        return nil, errors.New("Incorrect number of arguments. Expecting name of the key to query")
+    }
 
-	return nil, errors.New("Received unknown function query: " + function)
+    key = args[0]
+    valAsbytes, err := stub.GetState(key)
+    if err != nil {
+        jsonResp = "{\"Error\":\"Failed to get state for " + key + "\"}"
+        return nil, errors.New(jsonResp)
+    }
+
+    return valAsbytes, nil
 }
+
+func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
+    fmt.Println("query is running " + function)
+
+    // Handle different functions
+    if function == "read" {                            //read a variable
+        return t.read(stub, args)
+    }
+    fmt.Println("query did not find func: " + function)
+
+    return nil, errors.New("Received unknown function query: " + function)
+}
+
