@@ -24,23 +24,12 @@ import (
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
 
-/*
-m['id'] = str
-m['sex']    = int
-
-m['birthday']   = int
-m['spouse_id']  = int
-m['father_id']  = int
-m['monther_id'] = int
-m['child_ids']  = array
-*/
-
 type Family struct{
     Sex int `json:"sex"`
-    Birsthday string `json:"birthday"`
+    Birthday string `json:"birthday"`
     SpouseId string `json:"spouse_id"`
     FatherId string `json:"father_id"`
-    MontherId string `json:"monther_id"`
+    MotherId string `json:"monther_id"`
     ChildId string `json:"child_id"`
 }
 
@@ -83,6 +72,8 @@ func (t *SimpleChaincode) init_human(stub shim.ChaincodeStubInterface, args []st
             "father_id": "` + father_id + `",
             "mother_id": "` + mother_id + `",
             "child_id": "` + child_id + `"}`
+
+	fmt.Println(str)
 
     err = stub.PutState(id, []byte(str))
     if err != nil {
