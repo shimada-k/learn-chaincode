@@ -67,7 +67,7 @@ func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface, function string
 	return nil, nil
 }
 
-func (t *SimpleChaincode) init_marble(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+func (t *SimpleChaincode) init_human(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
     var err error
     id := args[0]
     sex := strings.ToLower(args[1])
@@ -99,7 +99,7 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 	if function == "init" {
 		return t.Init(stub, "init", args)
 	} else if function == "init_human" {     // 人を追加する
-		return t.Init(stub, "init", args)
+		return t.init_human(stub, args)
 	} else if function == "goto_hospital" {   // 子供IDを受け取り親を書き換える
         familyAsBytes, err := stub.GetState(args[0])
         if err != nil {
