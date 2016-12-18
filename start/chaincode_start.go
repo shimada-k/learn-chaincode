@@ -90,7 +90,7 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 	if function == "init" {
 		return t.Init(stub, "init", args)
 	} else if function == "hoge" {
-		stub.PutState(args[0], "hogehoge")
+		stub.PutState(args[0], []byte("hogehoge"))
         return nil, nil
 	} else if function == "init_human" {     // 人を追加する
 		return t.init_human(stub, args)
