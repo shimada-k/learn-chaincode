@@ -66,12 +66,7 @@ func (t *SimpleChaincode) init_human(stub shim.ChaincodeStubInterface, args []st
     mother_id := strings.ToLower(args[5])
     child_id := strings.ToLower(args[6])
 
-    str := `{"sex": "` + sex + `",
-            "birthday": "` + birthday + `",
-            "spouse_id": "` + spouse_id + `",
-            "father_id": "` + father_id + `",
-            "mother_id": "` + mother_id + `",
-            "child_id": "` + child_id + `"}`
+    str := `{"sex": "` + sex + `","birthday": "` + birthday + `","spouse_id": "` + spouse_id + `","father_id": "` + father_id + `","mother_id": "` + mother_id + `","child_id": "` + child_id + `"}`
 
 	fmt.Println(str)
 
@@ -106,6 +101,7 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 
         jsonAsBytes, _ := json.Marshal(res)
         stub.PutState(args[0], jsonAsBytes)
+        return nil, nil
     } else if function == "into_a_family" {   // 子供IDの親を老人のIDに書き換える
     }
 	fmt.Println("invoke did not find func: " + function)    //error
