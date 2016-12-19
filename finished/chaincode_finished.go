@@ -59,7 +59,7 @@ func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface, function string
 func (t *SimpleChaincode) init_human(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
     var err error
     id := args[0]
-    sex := strings.ToLower(args[1])
+    sex := args[1]
     birthday := strings.ToLower(args[2])
     spouse_id := strings.ToLower(args[3])
     father_id := strings.ToLower(args[4])
