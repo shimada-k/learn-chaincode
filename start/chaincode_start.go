@@ -114,7 +114,7 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
         jsonAsBytes, _ := json.Marshal(res)
         stub.PutState(args[0], jsonAsBytes)
         return nil, nil
-    } else if function == "pluged" {   // 子供の親IDを上書きする
+    } else if function == "adopted" {   // 子供の親IDを上書きする
         familyAsBytes, err := stub.GetState(args[0])
         if err != nil {
             return nil, err
