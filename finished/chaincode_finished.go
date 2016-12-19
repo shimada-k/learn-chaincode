@@ -37,9 +37,9 @@ type Family struct{
 type SimpleChaincode struct {
 }
 
-// ============================================================================================================================
+//==============
 // Main
-// ============================================================================================================================
+//==============
 func main() {
 	err := shim.Start(new(SimpleChaincode))
 	if err != nil {
@@ -84,12 +84,9 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 	// Handle different functions
 	if function == "init" {
 		return t.Init(stub, "init", args)
-	} else if function == "hoge" {
-		stub.PutState(args[0], []byte("hogehoge"))
-        return nil, nil
-	} else if function == "init_human" {     // 人を追加する
+	} else if function == "add" {     // 人を追加する
 		return t.init_human(stub, args)
-	} else if function == "goto_hospital" {   // 子供IDを受け取り親を書き換える
+	} else if function == "hospital" {   // 親の子供IDを消す
         familyAsBytes, err := stub.GetState(args[0])
         if err != nil {
             return nil, err
@@ -97,12 +94,38 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 
         res := Family{}
         json.Unmarshal(familyAsBytes, &res)
-        res.Sex = 3
+        res.ChildId = ""    // 子供を消す
 
         jsonAsBytes, _ := json.Marshal(res)
         stub.PutState(args[0], jsonAsBytes)
         return nil, nil
-    } else if function == "into_a_family" {   // 子供IDの親を老人のIDに書き換える
+    } else if function == "pluged" {   // 子供の親IDを消す
+        familyAsBytes, err := stub.GetState(args[0])
+        if err != nil {
+            return nil, err
+        }
+
+        res := Family{}
+        json.Unmarshal(familyAsBytes, &res)
+        res.FatherId = ""    // 父親を消す
+        res.MotherId = ""    // 母親を消す
+
+        jsonAsBytes, _ := json.Marshal(res)
+        stub.PutState(args[0], jsonAsBytes)
+        return nil, nil
+    } else if function == "pluged" {   // 子供の親IDを上書きする
+        familyAsBytes, err := stub.GetState(args[0])
+        if err != nil {
+            return nil, err
+        }
+
+        res := Family{}
+        json.Unmarshal(familyAsBytes, &res)
+        res.FatherId = args[1]    // 父親IDを上書きする
+
+        jsonAsBytes, _ := json.Marshal(res)
+        stub.PutState(args[0], jsonAsBytes)
+        return nil, nil
     }
 	fmt.Println("invoke did not find func: " + function)    //error
 
