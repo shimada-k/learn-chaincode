@@ -67,7 +67,7 @@ func (t *SimpleChaincode) init_human(stub shim.ChaincodeStubInterface, args []st
     mother_id := strings.ToLower(args[5])
     child_id := strings.ToLower(args[6])
 
-    str := `{"sex": "` + strconv.Itoa(sex) + `","birthday": "` + birthday + `","spouse_id": "` + spouse_id + `","father_id": "` + father_id + `","mother_id": "` + mother_id + `","child_id": "` + child_id + `"}`
+    str := `{"sex": ` + strconv.Itoa(sex) + `,"birthday": "` + birthday + `","spouse_id": "` + spouse_id + `","father_id": "` + father_id + `","mother_id": "` + mother_id + `","child_id": "` + child_id + `"}`
 
 	fmt.Println(str)
 
