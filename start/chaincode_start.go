@@ -30,7 +30,7 @@ type Family struct{
     Birthday string `json:"birthday"`
     SpouseId string `json:"spouse_id"`
     FatherId string `json:"father_id"`
-    MotherId string `json:"monther_id"`
+    MotherId string `json:"mother_id"`
     ChildId string `json:"child_id"`
 }
 
