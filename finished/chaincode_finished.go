@@ -4,12 +4,12 @@
 package main
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/hyperledger/fabric/core/chaincode/shim"
 	"strconv"
 	"strings"
+	"encoding/json"
+	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
 
 type Family struct {
