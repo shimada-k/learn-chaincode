@@ -86,7 +86,7 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 		jsonAsBytes, _ := json.Marshal(res)
 		stub.PutState(args[0], jsonAsBytes)
 		return nil, nil
-	} else if function == "pluged" { // 子供の親IDを消す
+	} else if function == "plugged" { // 子供の親IDを消す
 		familyAsBytes, err := stub.GetState(args[0])
 		if err != nil {
 			return nil, err
